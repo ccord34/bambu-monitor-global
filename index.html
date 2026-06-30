@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>Bambu Monitor DualEye Web Flasher</title>
+    <script
+      type="module"
+      src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"
+    ></script>
+    <style>
+      :root {
+        --ink: #172021;
+        --muted: #61706a;
+        --line: #dce4dc;
+        --paper: #f7f4ed;
+        --surface: #ffffff;
+        --accent: #2cd84a;
+        --accent-dark: #1f7c37;
+        --soft: #e8f6e9;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 12% 8%, rgba(44, 216, 74, 0.18), transparent 28%),
+          linear-gradient(180deg, #fbfaf6, #eef5ef);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .page {
+        width: min(1040px, calc(100% - 28px));
+        margin: 0 auto;
+        padding: 32px 0 48px;
+      }
+
+      .topbar,
+      .install-row,
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .topbar {
+        justify-content: space-between;
+        margin-bottom: 26px;
+      }
+
+      .mark {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        border-radius: 50%;
+        background: #0b120d;
+        color: var(--accent);
+        font-weight: 900;
+        box-shadow: inset 0 0 0 3px var(--accent);
+      }
+
+      .brand-name {
+        margin: 0;
+        font-size: 1.08rem;
+        font-weight: 850;
+      }
+
+      .brand-subtitle {
+        margin: 3px 0 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+        gap: 28px;
+        align-items: stretch;
+      }
+
+      .panel,
+      .visual,
+      .detail {
+        border: 1px solid rgba(23, 32, 33, 0.1);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.86);
+        box-shadow: 0 18px 52px rgba(26, 47, 43, 0.10);
+      }
+
+      .panel { padding: 30px; }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.25rem, 8vw, 4.15rem);
+        line-height: 0.98;
+        letter-spacing: -0.045em;
+      }
+
+      .lead {
+        margin: 18px 0 24px;
+        color: #394744;
+        font-size: 1.02rem;
+        line-height: 1.65;
+      }
+
+      .release-info {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin: 18px 0 22px;
+      }
+
+      .fact {
+        min-width: 0;
+        padding: 9px 12px;
+        border-left: 1px solid rgba(23, 32, 33, 0.14);
+      }
+
+      .fact span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 760;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .fact strong {
+        display: block;
+        overflow-wrap: anywhere;
+        margin-top: 4px;
+        font-size: 0.96rem;
+      }
+
+      .note {
+        margin: 0 0 18px;
+        color: var(--muted);
+        font-size: 0.94rem;
+        line-height: 1.6;
+      }
+
+      .install-row {
+        flex-wrap: wrap;
+      }
+
+      .download-link {
+        display: inline-flex;
+        min-height: 48px;
+        align-items: center;
+        border: 1px solid rgba(31, 124, 55, 0.28);
+        border-radius: 12px;
+        background: var(--soft);
+        color: #17532a;
+        font-weight: 850;
+        padding: 0 18px;
+        text-decoration: none;
+      }
+
+      esp-web-install-button {
+        --esp-tools-button-color: var(--accent-dark);
+        --esp-tools-button-text-color: #ffffff;
+        --esp-tools-button-border-radius: 12px;
+      }
+
+      .primary-button {
+        min-height: 48px;
+        border: 0;
+        border-radius: 12px;
+        background: var(--accent-dark);
+        color: #ffffff;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 850;
+        padding: 0 22px;
+      }
+
+      .support,
+      .license-note {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .license-note {
+        margin-top: 16px;
+        color: #7a4c18;
+        line-height: 1.5;
+      }
+
+      .visual {
+        display: grid;
+        min-height: 390px;
+        place-items: center;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 50% 45%, rgba(44, 216, 74, 0.30), transparent 44%),
+          #101817;
+      }
+
+      .device {
+        display: grid;
+        width: 240px;
+        height: 240px;
+        place-items: center;
+        border: 18px solid var(--accent);
+        border-radius: 50%;
+        background: #020504;
+        box-shadow: 0 18px 70px rgba(0, 0, 0, 0.42);
+        color: #eef9ff;
+        text-align: center;
+      }
+
+      .device strong {
+        display: block;
+        font-size: 3.4rem;
+        line-height: 1;
+        letter-spacing: -0.08em;
+      }
+
+      .device span {
+        display: block;
+        margin-top: 8px;
+        color: #cbeed3;
+        font-weight: 800;
+      }
+
+      .details {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .detail { padding: 18px; }
+
+      .detail h2 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+      }
+
+      .detail p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.55;
+      }
+
+      @media (max-width: 800px) {
+        .hero,
+        .details,
+        .release-info {
+          grid-template-columns: 1fr;
+        }
+
+        .panel { padding: 22px; }
+        .topbar { align-items: flex-start; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="brand">
+          <div class="mark">BM</div>
+          <div>
+            <p class="brand-name">Bambu Monitor DualEye</p>
+            <p class="brand-subtitle">ESP32-S3 DualEye web flasher</p>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div class="panel">
+            <h1>Install Bambu Monitor</h1>
+            <p class="lead">
+              Flash the global-login firmware for the Waveshare ESP32-S3 DualEye
+              LCD 1.28 board. This build supports Bambu Cloud global account
+              login paths, token login, AP Wi-Fi setup, and the existing DualEye
+              monitor UI modes.
+            </p>
+
+            <div class="release-info" aria-live="polite">
+              <div class="fact">
+                <span>Channel</span>
+                <strong>Stable</strong>
+              </div>
+              <div class="fact">
+                <span>Version</span>
+                <strong>20260630-global-login</strong>
+              </div>
+              <div class="fact">
+                <span>Write mode</span>
+                <strong>Segmented flash</strong>
+              </div>
+            </div>
+
+            <p class="note">
+              Use a desktop Chrome or Edge browser with Web Serial support. Use
+              a real USB data cable, not a charge-only cable.
+            </p>
+
+            <div class="install-row">
+              <esp-web-install-button id="install-button">
+                <button class="primary-button" slot="activate" type="button">
+                  Install Firmware
+                </button>
+                <span slot="unsupported">Use desktop Chrome or Edge.</span>
+                <span slot="not-allowed">Open this page over HTTPS or localhost.</span>
+              </esp-web-install-button>
+              <a
+                class="download-link"
+                href="./downloads/BambuMonitor-ESP32S3-DualEye-20260630-global-login.zip"
+                download
+              >
+                Download offline package
+              </a>
+              <span class="support">Target chip: ESP32-S3</span>
+            </div>
+
+            <p class="license-note">
+              Non-commercial use only. Do not sell pre-flashed devices, bundle
+              this firmware with paid products, or provide paid flashing services
+              without permission.
+            </p>
+          </div>
+
+          <aside class="visual" aria-label="Bambu Monitor device preview">
+            <div class="device">
+              <div>
+                <strong>100%</strong>
+                <span>DualEye</span>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="details" aria-label="Flashing instructions">
+          <div class="detail">
+            <h2>1. Connect</h2>
+            <p>Connect the ESP32-S3 board to your computer by USB.</p>
+          </div>
+          <div class="detail">
+            <h2>2. Install</h2>
+            <p>Click Install Firmware and choose the correct serial port.</p>
+          </div>
+          <div class="detail">
+            <h2>3. Configure</h2>
+            <p>After reboot, use the AP setup page if Wi-Fi is not configured.</p>
+          </div>
+          <div class="detail">
+            <h2>4. Monitor</h2>
+            <p>Open the local admin page shown on the device screen.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const firmware = {
+        name: "Bambu Monitor DualEye",
+        version: "20260630-global-login",
+        new_install_prompt_erase: false,
+        new_install_improv_wait_time: 0,
+        builds: [
+          {
+            chipFamily: "ESP32-S3",
+            improv: false,
+            parts: [
+              { path: new URL("./firmware/bootloader.bin", window.location.href).href, offset: 0x0000 },
+              { path: new URL("./firmware/partitions.bin", window.location.href).href, offset: 0x8000 },
+              { path: new URL("./firmware/boot_app0.bin", window.location.href).href, offset: 0xe000 },
+              { path: new URL("./firmware/firmware.bin", window.location.href).href, offset: 0x10000 },
+            ],
+          },
+        ],
+      };
+
+      const installButton = document.querySelector("#install-button");
+      let manifestUrl = null;
+
+      function setManifest() {
+        if (manifestUrl) URL.revokeObjectURL(manifestUrl);
+        manifestUrl = URL.createObjectURL(
+          new Blob([JSON.stringify(firmware)], { type: "application/json" }),
+        );
+        installButton.setAttribute("manifest", manifestUrl);
+      }
+
+      setManifest();
+      customElements.whenDefined("esp-web-install-button").then(setManifest);
+    </script>
+  </body>
+</html>
